@@ -16,6 +16,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // to ensure that the Core Data is available from the moment our app launches,
+        // and that there are not multiple versions of the NSPersistentContainer, the Managed Object Context, etc
+        // create an instance of the ItemStore class in the AppDelegate, and reference that instance from objects that need it
+        let rootViewController = window!.rootViewController as! UINavigationController
+        let viewController = rootViewController.topViewController as! ViewController
+        viewController.store = ItemStore()
+        
         return true
     }
 
