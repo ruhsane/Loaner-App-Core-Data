@@ -22,6 +22,7 @@ class ViewController: UIViewController {
         
         // Save the new items in the Managed Object Context
         store.saveContext()
+        updateDataSource()
     }
     
     override func viewDidLoad() {
@@ -35,12 +36,28 @@ class ViewController: UIViewController {
         flow.itemSize = CGSize(width: screenSize.width / 2 - horizontalPadding * 2, height: screenSize.width / 2 - verticalPadding * 2)
         flow.sectionInset = UIEdgeInsets(top: verticalPadding, left: horizontalPadding, bottom: verticalPadding, right: horizontalPadding)
         collectionView.collectionViewLayout = flow
+        
+        updateDataSource()
     }
 
     // call to the NSEntityDescription.insertNewObject method so that the item returned in the createNewItem function is a Managed Object that is also inserted into the active context.
     func createNewItem() -> Item {
         let newItem = NSEntityDescription.insertNewObject(forEntityName: "Item", into: store.persistentContainer.viewContext) as! Item
         return newItem
+    }
+    
+    // populate an array with fetched results on success, or to delete all items from that array on failure
+    private func updateDataSource(){
+        self.store.fetchPersistedData { (fetchItemsResult) in
+            switch fetchItemsResult {
+            case let .success(items):
+                self.items = items
+            case .failure(_):
+                self.items.removeAll()
+            }
+            // reload the collection view's data source to present the current data set to the user
+            self.collectionView.reloadSections(IndexSet(integer: 0))
+        }
     }
     
     func add(saved item: Item) {
