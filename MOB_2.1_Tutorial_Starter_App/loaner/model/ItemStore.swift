@@ -23,4 +23,20 @@ class ItemStore: NSObject {
         }
         return container
     }()
+    
+    // Save Core Data Context
+    func saveContext() {
+        let viewContext = persistentContainer.viewContext
+        if viewContext.hasChanges {
+            do {
+                try viewContext.save()
+            } catch {
+                // fatalError() causes the application to generate a crash log and terminate.
+                // should not use this func in a shipping application, although it may be useful during development
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+    }
+    
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
     
@@ -14,6 +15,14 @@ class ViewController: UIViewController {
     var items: [Item] = []
     
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    // To save a newly created item to Core Data, invoke the saveContext function on the store variable
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        // Save the new items in the Managed Object Context
+        store.saveContext()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,8 +37,10 @@ class ViewController: UIViewController {
         collectionView.collectionViewLayout = flow
     }
 
+    // call to the NSEntityDescription.insertNewObject method so that the item returned in the createNewItem function is a Managed Object that is also inserted into the active context.
     func createNewItem() -> Item {
-        return Item(itemTitle: "Untitled Item")
+        let newItem = NSEntityDescription.insertNewObject(forEntityName: "Item", into: store.persistentContainer.viewContext) as! Item
+        return newItem
     }
     
     func add(saved item: Item) {
